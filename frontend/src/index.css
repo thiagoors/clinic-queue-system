@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500;
+  }
+
+  .btn-success {
+    @apply bg-green-600 text-white hover:bg-green-700 focus:ring-green-500;
+  }
+
+  .btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+  }
+
+  .btn-lg {
+    @apply px-8 py-4 text-xl;
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-lg p-6;
+  }
+
+  .input {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+}
+
+/* Animation for new calls */
+@keyframes highlight {
+  0%, 100% { background-color: transparent; }
+  50% { background-color: rgba(59, 130, 246, 0.3); }
+}
+
+.highlight-new {
+  animation: highlight 1s ease-in-out 3;
+}
+
+/* Totem styles */
+.totem-button {
+  @apply w-full py-12 text-3xl font-bold rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95;
+}
+
+/* Display panel styles */
+.display-call {
+  @apply text-center py-8 rounded-xl mb-4 transition-all duration-500;
+}
+
+.display-call.current {
+  @apply bg-primary-600 text-white text-4xl font-bold animate-pulse-slow;
+}
+
+.display-call.history {
+  @apply bg-gray-100 text-gray-600 text-xl;
+}

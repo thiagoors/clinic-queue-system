@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Role: ADMIN, RECEPTIONIST, DOCTOR
+// SectorType: CONSULTATION, EMERGENCY, OTHER
+// TicketType: CONSULTATION, EMERGENCY, PRIORITY
+// TicketStatus: WAITING_RECEPTION, IN_RECEPTION, WAITING_SECTOR, IN_SECTOR, COMPLETED, CANCELLED
+// CallType: RECEPTION, SECTOR
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("RECEPTIONIST")
+  desk      String?  // Guichê para recepcionistas
+  sector    Sector?  @relation(fields: [sectorId], references: [id])
+  sectorId  String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ticketsCalled Ticket[] @relation("CalledBy")
+  calls         Call[]
+
+  @@map("users")
+}
+
+model Sector {
+  id        String   @id @default(uuid())
+  name      String
+  room      String   // Sala
+  type      String   @default("CONSULTATION")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users   User[]
+  tickets Ticket[]
+
+  @@map("sectors")
+}
+
+model Ticket {
+  id          String   @id @default(uuid())
+  number      String   // Ex: C001, P002, A003
+  cpfPrefix   String   // 5 primeiros dígitos do CPF
+  patientName String?  // Preenchido pela recepção
+  type        String   // CONSULTATION, EMERGENCY, PRIORITY
+  status      String   @default("WAITING_RECEPTION")
+
+  sector      Sector?  @relation(fields: [sectorId], references: [id])
+  sectorId    String?
+
+  calledBy    User?    @relation("CalledBy", fields: [calledById], references: [id])
+  calledById  String?
+
+  createdAt   DateTime @default(now())
+  calledAt    DateTime?
+  forwardedAt DateTime?
+  completedAt DateTime?
+
+  calls Call[]
+
+  @@map("tickets")
+}
+
+model Call {
+  id        String   @id @default(uuid())
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  ticketId  String
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  message   String   // Mensagem exibida no painel
+  type      String   // RECEPTION, SECTOR
+  desk      String?  // Guichê (para chamadas da recepção)
+  room      String?  // Sala (para chamadas do setor)
+  createdAt DateTime @default(now())
+
+  @@map("calls")
+}
+
+model DailyCounter {
+  id           String   @id @default(uuid())
+  date         DateTime @unique
+  consultation Int      @default(0)
+  emergency    Int      @default(0)
+  priority     Int      @default(0)
+
+  @@map("daily_counters")
+}
